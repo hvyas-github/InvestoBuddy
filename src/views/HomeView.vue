@@ -64,7 +64,7 @@ export default {
         text: value.text,
       });
       this.getResponseFromChatGPT(value);
-      this.getResponse(value);
+      // this.getResponse(value);
     },
     async getResponseFromChatGPT(value) {
       const chat = await openai.chat.completions.create({
