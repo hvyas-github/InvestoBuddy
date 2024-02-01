@@ -1,5 +1,6 @@
 <script>
 import { VueBotUI } from "vue-bot-ui";
+import openai from "../helpers/useOpenAI";
 export default {
   components: {
     VueBotUI,
@@ -56,41 +57,54 @@ export default {
         });
       }, 1000);
     },
-    msgSend(value) {
+    async msgSend(value) {
       this.messages.push({
         agent: "user",
         type: "text",
         text: value.text,
       });
+      this.getResponseFromChatGPT(value);
       this.getResponse(value);
+    },
+    async getResponseFromChatGPT(value) {
+      const chat = await openai.chat.completions.create({
+        messages: [{ role: "user", content: value.text }],
+        model: "gpt-3.5-turbo",
+      });
+      console.log("answer", chat.choices[0].message);
+      this.messages.push({
+        agent: "bot",
+        type: "text",
+        text: chat.choices[0].message.content,
+      });
     },
     getResponse(value) {
       let reply = {};
       console.log("value", value);
       let inputValue = value.text;
 
-       if(inputValue ===  "hello") {
-          console.log("matched");
-          reply = {
-            text: "Welcome to Simulator Learn section. How can I help you ?",
-            agent: "bot",
-            type: "text",
-          };
-       }
-       if(inputValue === "learn options trading") {
-        console.log('matched')
-          reply = {
-            type: "button",
-            text: "Here are the results from our knowledgebase.",
-            agent: 'bot',
-            options: [
-              {
-                text: "Click to learn about options",
-                value: "https://www.investopedia.com/terms/o/option.asp",
-                action: "url",
-              },
-            ]
-          };
+      if (inputValue === "hello") {
+        console.log("matched");
+        reply = {
+          text: "Welcome to Simulator Learn section. How can I help you ?",
+          agent: "bot",
+          type: "text",
+        };
+      }
+      if (inputValue === "learn options trading") {
+        console.log("matched");
+        reply = {
+          type: "button",
+          text: "Here are the results from our knowledgebase.",
+          agent: "bot",
+          options: [
+            {
+              text: "Click to learn about options",
+              value: "https://www.investopedia.com/terms/o/option.asp",
+              action: "url",
+            },
+          ],
+        };
       }
       this.messages = [...this.messages, reply];
       console.log("this.mess", this.messages);

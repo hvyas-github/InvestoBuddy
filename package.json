@@ -7,6 +7,7 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
+    "openai": "^4.26.0",
     "vue": "^2.7.7",
     "vue-bot-ui": "^0.2.8",
     "vue-router": "^3.5.4"
